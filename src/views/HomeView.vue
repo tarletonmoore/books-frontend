@@ -1,5 +1,14 @@
 <template>
   <div class="home">
+
+    <h1>New Book</h1>
+    <div>
+      Title: <input type="text" v-model="newBookTitle" />
+      Author: <input type="text" v-model="newBookAuthor" />
+      Pages: <input type="text" v-model="newBookPages" />
+      <button v-on:click="createPhoto()">Create Book</button>
+    </div>
+
     <h1>{{ message }}</h1>
     <!-- <button v-on:click="getBooks">get books</button> -->
     <p v-for="book in books" :key="book.id">
@@ -15,9 +24,9 @@
 <dialog id="book-details">
       <form method="dialog">
         <h1>Book info</h1>
-        <p>Name: {{ book.title }}</p>
-        <p>Width: {{ book.author }}</p>
-        <p>Height: {{ book.pages }}</p>
+        <p>Title: {{ book.title }}</p>
+        <p>Author: {{ book.author }}</p>
+        <p>Pages: {{ book.pages }}</p>
         <button>Close</button>
       </form>
     </dialog>
@@ -34,6 +43,9 @@ export default {
     return {
       message: "Welcome to Vue.js!",
       books: [],
+      newPhotoName: "",
+      newPhotoWidth: "",
+      newPhotoHeight: "",
       book: {}
     };
   },
@@ -44,11 +56,24 @@ export default {
         this.books = response.data
       })
     },
-    booksShow() {
-      console.log("working???")
-      axios.get(`/books/1`).then(response => {
-        console.log(response.data)
-      })
+    createPhoto: function() {
+      let params = {
+        title: this.newBookTitle,
+        author: this.newBookAuthor,
+        pages: this.newBookPages,
+      };
+      axios
+        .post("/books.json", params)
+        .then(response => {
+          console.log("books create", response);
+          this.books.push(response.data);
+          this.newBookTitle = "";
+          this.newBookAuthor = "";
+          this.newBookPages = "";
+        })
+        .catch(error => {
+          console.log("books create error", error.response);
+        });
     },
     showBook: function(book) {
       this.book = book;
