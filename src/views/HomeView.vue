@@ -24,9 +24,10 @@
 <dialog id="book-details">
       <form method="dialog">
         <h1>Book info</h1>
-        <p>Title: {{ book.title }}</p>
-        <p>Author: {{ book.author }}</p>
-        <p>Pages: {{ book.pages }}</p>
+        <p>Title: <input type="text" v-model="book.title" /></p>
+        <p>Author: <input type="text" v-model="book.author" /></p>
+        <p>Pages: <input type="text" v-model="book.pages" /></p>
+        <button v-on:click="updateBook(book)">Update</button>
         <button>Close</button>
       </form>
     </dialog>
@@ -78,6 +79,22 @@ export default {
     showBook: function(book) {
       this.book = book;
       document.querySelector("#book-details").showModal();
+    },
+    updateBook: function(book) {
+      let params = {
+        title: book.title,
+        author: book.author,
+        pages: book.pages,
+      };
+      axios
+        .patch("/books/" + book.id, params)
+        .then(response => {
+          console.log("book update", response);
+          this.book = {};
+        })
+        .catch(error => {
+          console.log("books update error", error.response);
+        });
     },
   }
 };
